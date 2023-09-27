@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
-import useUser from "../../../../secure-project/secure_aws_files/client/src/hooks/useUser";
+import useUser from '../hooks/useUser';
 import "./Header.css";
 
 const Header = () => {

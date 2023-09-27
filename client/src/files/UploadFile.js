@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import useUser from "../../../../secure-project/secure_aws_files/client/src/hooks/useUser";
-import { db } from "../../../../secure-project/secure_aws_files/client/src/firebase";
+import useUser from '../hooks/useUser';
+import { db } from '../firebase'
 import { doc, setDoc } from "firebase/firestore";
 
 const UploadFile = () => {
