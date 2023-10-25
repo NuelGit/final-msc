@@ -15,11 +15,11 @@ router.get(
     // Get encrypted file as buffer from S3
     const encryptedFile = await getObject(req, res);
 
-    // Get DEK from Firebase and convert to buffer
-    const dek = Buffer.from(req.query.dek, "hex");
+    // Get AES from Firebase and convert to buffer
+    const aes = Buffer.from(req.query.aes, "hex");
 
     // Decrypt file as buffer
-    const decryptedFileBuffer = await decrypt(encryptedFile, dek);
+    const decryptedFileBuffer = await decrypt(encryptedFile, aes);
 
     // Write decrypted file to disk
     await fs.promises.writeFile(`./${fileName}`, decryptedFileBuffer);

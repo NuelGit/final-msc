@@ -1,53 +1,53 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { getAuth, signOut } from "firebase/auth";
-import useUser from '../hooks/useUser';
-import "./Header.css";
+import React from 'react'
+import {Link, useNavigate} from 'react-router-dom'
+import {UserAuth}  from '../hooks/UserContext'
+import './Header.js'
 
 const Header = () => {
-  const { userData } = useUser();
-  const navigator = useNavigate();
-  return (
-    <header className="header">
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/create-user">Create Account</Link>
-          </li>
-          <li>
-            <Link to="/profile">Profile</Link>
-          </li>
-          <li>
-            <Link to="/uploads">File Upload</Link>
-          </li>
-          <li>
-            <Link to="/view-files">View Uploaded Files</Link>
-          </li>
-        </ul>
-        <div>
-          {userData ? (
-            <button
-              onClick={() => {
-                signOut(getAuth());
-              }}>
-              {" "}
-              Log-Out
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                navigator("/login");
-              }}>
-              Log-In
-            </button>
-          )}
-        </div>
-      </nav>
-    </header>
-  );
-};
+    const {user, logout, userProfile} = UserAuth()
+    const navigate = useNavigate()
 
-export default Header;
+    const handleLogout = async() =>{
+        try {
+           await logout() 
+           navigate('/')
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+  return (
+
+    <header className='header'>
+    <nav>
+      <ul>
+       
+        {!user ? (
+            
+          <>
+            <li><Link to="/">Home Page</Link></li>
+            {/* <li><Link to="/">Login</Link></li> */}
+          </>
+        ) : (
+          <>
+             {/* <li><Link to="/profile">Profile</Link></li> */}
+            <li><Link to="/profile">Profile</Link></li>
+            <li><Link to="/uploads">File Upload</Link></li>
+            <li><Link to="/view-files">View and Download Uploaded Files</Link></li>
+            
+           
+            <li> Welcome! { user.email} </li>
+            <li>  {userProfile && userProfile.fullname}</li>
+            <li>
+            <button onClick={handleLogout}> Log-Out</button>
+            </li>
+          </>
+        )}
+      </ul>
+    </nav>
+  </header>
+);
+
+}
+
+export default Header

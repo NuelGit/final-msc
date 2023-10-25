@@ -1,29 +1,37 @@
-import React from "react";
-import useUser from "../hooks/useUser";
+import React from 'react'
+// import {useNavigate} from 'react-router-dom'
+import {UserAuth} from  '../hooks/UserContext'
+import './Profile.css'
 
 const Profile = () => {
-  const { userData, isLoading } = useUser();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
+    const { user, userProfile} = UserAuth()
+    
   return (
-    <div className="container">
-      <h1> User Profile </h1>
-      {userData ? (
-        <div>
-          <p>
-            <strong>Email:</strong> {userData.email}!{" "}
-          </p>
-          {/* <p> Welcome, {userData.email}!</p>  */}
-          <p> Your ID: {userData.uid}</p>
-        </div>
-      ) : (
-        <p>You are not logged in. Please log in to view your profile.</p>
-      )}
-    </div>
-  );
-};
+    <> 
+    <div>User's Profile</div>
+    <p>User Email: {user && user.email} </p>
 
-export default Profile;
+    <div>
+        <p> User Full-Name: { userProfile && userProfile.fullname}</p>
+        <p> User phone-Number: { userProfile && userProfile.phone}</p>
+    </div>
+
+    <div>
+        {/* <button onClick={handleLogout}> Log-Out</button> */}
+    </div>
+  </>
+  )
+}
+
+export default Profile
+
+// const navigate = useNavigate()
+
+    // const handleLogout = async() =>{
+    //     try {
+    //        await logout() 
+    //        navigate('/')
+    //     } catch (error) {
+    //         console.log(error.message)
+    //     }
+    // }

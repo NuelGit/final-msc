@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
-import useUser from "../hooks/useUser";
 import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../firebase.config";
+import {UserAuth} from  '../hooks/UserContext'
 
 const ViewFiles = () => {
   // Define state variables
-  const { userData, isLoading } = useUser();
+  const { user } = UserAuth();
   const [filesData, setFilesData] = useState([]);
 
   // Function to trigger file download
   const triggerDownload = async (fileKey) => {
-    let myDEK = '';
-      myDEK = prompt("Enter your DEK");
+    let myAES = '';
+      myAES = prompt("Enter your AES");
 
-      if(!myDEK){
-        alert(" DEk can not be empty")
+      if(!myAES){
+        alert(" AES can not be empty")
         return
 
-      } else if(myDEK.length !==64){
-        alert('DEK must Be 64 Characters')
+      } else if(myAES.length !==64){
+        alert('AES must Be 64 Characters')
         return
       }
 
@@ -31,21 +31,21 @@ const ViewFiles = () => {
       if (docSnapshot.exists()) {
         return docSnapshot.data()[fileName];
       } else {
-        console.error("No DEK found for file:", fileName);
+        console.error("No AES found for file:", fileName);
         return null;
       }
     };
 
-    const DEK = await retrieveDEKfromFirebase(fileName, user);
+    const AES = await retrieveDEKfromFirebase(fileName, user);
 
-    if (myDEK !== DEK) {
-      alert("Incorrect DEK");
+    if (myAES !== AES) {
+      alert("Incorrect AES");
       return;
     }
 
     try {
       const response = await axios.get(
-        `/api/download?key=${fileKey}&dek=${DEK}`,
+        `/api/download?key=${fileKey}&aes=${AES}`,
         {
           responseType: "blob",
         }
@@ -65,25 +65,28 @@ const ViewFiles = () => {
 
   // Function to fetch files data
   useEffect(() => {
-    if (!userData) {
+    if (!user) {
       return;
     }
     axios
-      .get(`api/files?user=${userData.email}`)
+      .get(`api/files?user=${user.email}`)
       .then((response) => {
         setFilesData(response.data.files);
       })
       .catch((err) => {
         console.error(err);
       });
-  }, [userData]);
+  }, [user]);
 
   return (
+
+    // isLoading ? (
+    //   <p>Loading user data...</p>
+    // ) :
+
     <div>
       <h2>View Files</h2>
-      {isLoading ? (
-        <p>Loading user data...</p>
-      ) : userData ? (
+      { user ? (
         <table>
           <thead>
             <tr>

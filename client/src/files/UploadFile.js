@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import useUser from '../hooks/useUser';
-import { db } from '../firebase'
+import { db } from '../firebase.config'
 import { doc, setDoc } from "firebase/firestore";
+import {UserAuth} from  '../hooks/UserContext'
 
 const UploadFile = () => {
   // Define state variables
   const [selectedFile, setSelectedFile] = useState(null);
   const [status, setStatus] = useState("");
-  const [filedek, setFileDek] = useState("");
-  const { userData, isLoading } = useUser();
+  const [fileAes, setFileAes] = useState("");
+  const {user} = UserAuth()
+  // const { userData, isLoading } = useUser();
 
   // Function to handle file selection
   const handleFileChange = (event) => {
@@ -17,12 +18,12 @@ const UploadFile = () => {
   };
 
   // Function to store DEK in Firestore
-  const storeDEKInFirebase = async (filename, DEK, email) => {
+  const storeDEKInFirebase = async (filename, AES, email) => {
     const docRef = doc(db, "users", email);
     await setDoc(
       docRef,
       {
-        [filename]: DEK,
+        [filename]: AES,
       },
       { merge: true }
     );
@@ -36,7 +37,7 @@ const UploadFile = () => {
     }
 
     const fileName = selectedFile.name;
-    const email = userData.email;
+    const email = user.email;
 
     setStatus("Uploading...");
     const formData = new FormData();
@@ -50,15 +51,15 @@ const UploadFile = () => {
       });
       
        if (response.data.status === "success") {
-        setFileDek(`Your DEK is ${response.data.dek}.`);
-        setStatus(`Uploading DEK to firestore now...`);
+        setFileAes(`Your AES is ${response.data.aes}.`);
+        setStatus(`Uploading AES to firestore now...`);
         // Store DEK in Firestore
         await storeDEKInFirebase(
           `${response.data.uuid}-${fileName}`,
-          response.data.dek,
+          response.data.aes,
           email
         );
-        setStatus("DEK uploaded to Firestore successfully.");
+        setStatus("AES uploaded to Firestore successfully.");
       } else {
         throw new Error(response.data.status);
       }
@@ -71,14 +72,17 @@ const UploadFile = () => {
       return (
         <div>
       <h2>File Upload</h2>
-      {isLoading ? (
+
+      {/* isLoading ? (
         <p>Loading user data...</p>
-        ) : userData ? (
+        ) :  */}
+
+      {user ? (
           <div>
           <input type="file" onChange={handleFileChange} />
           <button onClick={handleUpload}>Upload</button>
           <div>Status: {status}</div>
-          <div>DEK: {filedek}</div>
+          <div>AES: {fileAes}</div>
         </div>
       ) : (
         <div>You must be logged in to upload a file.</div>
